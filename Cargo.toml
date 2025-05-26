@@ -1,0 +1,11 @@
+[package]
+name = "topdown-light-fantasy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+macroquad = "0.4"
+once_cell = "1.18"
+
+[package.metadata.android]
+assets = "assets/"

@@ -1,0 +1,30 @@
+[tasks.build-wasm]
+command = "cargo"
+args = ["build", "--release", "--target", "wasm32-unknown-unknown"]
+
+[tasks.wait]
+script = "timeout /t 3 /nobreak"
+
+[tasks.copy-wasm]
+script = [
+    "echo Copying WASM file...",
+    "if not exist build mkdir build",
+    "echo Copying from target\\wasm32-unknown-unknown\\release\\topdown-light-fantasy.wasm",
+    "copy /Y target\\wasm32-unknown-unknown\\release\\topdown-light-fantasy.wasm build\\topdown-light-fantasy.wasm"
+]
+
+[tasks.serve]
+script = [
+    "cd build",
+    "live-server --port=8000"
+]
+
+[tasks.build-windows]
+command = "cargo"
+args = ["build", "--release", "--target", "x86_64-pc-windows-msvc"]
+
+[tasks.start]
+dependencies = ["build-wasm", "wait", "copy-wasm", "wait", "serve"]
+
+[tasks.wasm]
+dependencies = ["build-wasm", "wait", "copy-wasm", "wait"]
