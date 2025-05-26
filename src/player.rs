@@ -29,7 +29,10 @@ pub struct Player {
 impl Player {
     pub async fn new(x: f32, y: f32) -> Self {
         let texture = match load_texture("images/player_spritesheet.png").await {
-            Ok(t) => Some(t),
+            Ok(t) => {
+                t.set_filter(FilterMode::Nearest); // opcional: manter pixel-art
+                Some(t)
+            },
             Err(_) => {
                 println!("Failed to load player texture, falling back to rectangle");
                 None

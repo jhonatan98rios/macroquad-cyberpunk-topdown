@@ -1,6 +1,3 @@
-#[macro_use]
-mod macros;
-
 mod player;
 mod enemies;
 mod strategies;
@@ -12,6 +9,8 @@ mod components;
 mod game;
 mod game_over;
 mod level_up;
+
+mod scenario;
 
 mod skills;
 mod experience;
