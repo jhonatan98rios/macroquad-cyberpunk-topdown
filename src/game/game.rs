@@ -14,6 +14,7 @@ use crate::skills::skills_factory::SkillsFactory;
 use crate::experience::experience_system::ExperienceSystem;
 
 use crate::scenario::floor::FloorTileSet;
+use crate::scenario::floor_map::TileMap;
 
 pub struct Game {
     player: Player,
@@ -24,6 +25,7 @@ pub struct Game {
     pub joystick: Option<Joystick>,
     joystick_dir: Option<Vec2>,
     floor_tiles: FloorTileSet,
+    map: TileMap,
 }
 
 impl Game {
@@ -73,6 +75,7 @@ impl Game {
         let experience_system = ExperienceSystem::new();
 
         let floor_tiles = FloorTileSet::load("images/ground.png").await;
+        let map = TileMap::load_from_csv("files/ground.csv").await;
 
         Game {
             player,
@@ -82,7 +85,8 @@ impl Game {
             experience_system,
             joystick,
             joystick_dir: None,
-            floor_tiles
+            floor_tiles,
+            map
         }
     }
 
@@ -135,8 +139,7 @@ impl Game {
         set_camera(&self.camera);
 
         // Draw the ground
-        // draw_rectangle(0.0, 0.0, WORLD_WIDTH, WORLD_HEIGHT, Color::from_rgba(30, 30, 30, 255));
-        self.floor_tiles.draw_floor();
+        self.floor_tiles.draw_tilemap(&self.map);
 
         self.enemies.draw(self.player.position(), PositionOverlap::Behind);
         self.player.draw();

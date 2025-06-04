@@ -1,5 +1,5 @@
 use macroquad::prelude::*;
-use crate::constants::{WORLD_WIDTH, WORLD_HEIGHT};
+use super::floor_map::TileMap;
 
 pub struct FloorTileSet {
     texture: Texture2D,
@@ -7,39 +7,15 @@ pub struct FloorTileSet {
     tiles_per_row: u8,
 }
 
-pub enum FloorTile {
-    Sidewalk = 0,
-    Top = 1,
-    Right = 2,
-    Left = 3,
-    Bottom = 4,
-    Asphalt = 5,
-    Manhole = 6,
-    BottomLeft = 7,
-    BottomRight = 8,
-    TopLeft = 9,
-    TopRight = 10,
-}
 
 impl FloorTileSet {
     pub async fn load(path: &str) -> Self {
-        // let texture = load_texture(path).await.unwrap();
-        // texture.set_filter(FilterMode::Nearest); // opcional: manter pixel-art
-        let texture = match load_texture(path).await {
-            Ok(t) => {
-                t.set_filter(FilterMode::Nearest); // opcional: manter pixel-art
-                Some(t)
-            },
-            Err(_) => {
-                println!("Failed to load player texture, falling back to rectangle");
-                None
-            }
-        };
+        let texture = load_texture(path).await.unwrap();
 
         FloorTileSet {
-            texture: texture.unwrap(),
+            texture: texture,
             tile_size: vec2(64.0, 64.0),
-            tiles_per_row: 11,
+            tiles_per_row: 15,
         }
     }
 
@@ -65,42 +41,21 @@ impl FloorTileSet {
         );
     }
 
-    pub fn draw_floor(&self) {
-        let tile_size = self.tile_size;
-        let cols = (WORLD_WIDTH / tile_size.x).ceil() as i32;
-        let rows = (WORLD_HEIGHT / tile_size.y).ceil() as i32;
+    pub fn draw_tilemap(&self, map: &TileMap) {
+        for y in 0..map.height {
+            for x in 0..map.width {
+                let index = y * map.width + x;
+                let tile_id = map.tiles[index];
 
-        for y in 0..rows {
-            for x in 0..cols {
+                // Flip Y here:
+                let draw_y = (map.height - 1 - y) as f32;
 
-                let mut tile_index = 5; // tile padrão
+                let position = vec2(
+                    x as f32 * self.tile_size.x,
+                    draw_y * self.tile_size.y,
+                );
 
-                if x == 0 && y == 0 {
-                    tile_index = FloorTile::BottomLeft as u8; // Bottom Left 
-                } else 
-                if x == cols - 1 && y == rows - 1 {
-                    tile_index = FloorTile::TopRight as u8; // Top Right
-                } else 
-                if x == cols - 1 && y == 0 {
-                    tile_index = FloorTile::BottomRight as u8; //
-                } else 
-                if x == 0 && y == rows - 1 {
-                    tile_index = FloorTile::TopLeft as u8; //
-                } else 
-                
-                
-                if y == 0 {
-                    tile_index = FloorTile::Bottom as u8; // linha superior
-                } else if y == rows - 1 {
-                    tile_index = FloorTile::Top as u8; // linha inferior
-                } else if x == 0 {
-                    tile_index = FloorTile::Left as u8; // coluna esquerda
-                } else if x == cols - 1 {
-                    tile_index = FloorTile::Right as u8; // coluna direita
-                }
-
-                let pos = vec2(x as f32 * tile_size.x, y as f32 * tile_size.y);
-                self.draw_tile(tile_index, pos);
+                self.draw_tile(tile_id, position);
             }
         }
     }
