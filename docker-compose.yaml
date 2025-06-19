@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  android-builder:
+    image: cargo-apk
+    container_name: cyberpunk_topdown_android_builder
+    working_dir: /root/src
+    volumes:
+      - ./:/root/src
+    command: cargo quad-apk build --release

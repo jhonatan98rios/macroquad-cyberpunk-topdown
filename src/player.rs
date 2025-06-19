@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::constants::{WORLD_HEIGHT, WORLD_WIDTH};
+use crate::buildings::Building;
 
 #[derive(PartialEq, Clone, Copy)]
 enum PlayerState {
@@ -44,7 +45,7 @@ impl Player {
             y,
             max_health: 200.0,
             health: 200.0,
-            speed: 2.0,
+            speed: 1.5,
             size: 64.0,
             texture,
             last_movement: Vec2::ZERO,
@@ -65,7 +66,7 @@ impl Player {
         Vec2::new(self.x, self.y)
     }
 
-    pub fn update(&mut self) {
+    pub fn update(&mut self, buildings: &[Building]) {
         let mut move_dir = Vec2::ZERO;
 
         if is_key_down(KeyCode::Right) || is_key_down(KeyCode::D) {
@@ -81,19 +82,19 @@ impl Player {
             move_dir.y -= 1.0;
         }
 
-        self.move_by_direction(move_dir);
+        self.move_by_direction(move_dir, buildings);
         self.update_animation();
     }
 
-    pub fn update_with_direction(&mut self, joystick_dir: Option<Vec2>) {
+    pub fn update_with_direction(&mut self, joystick_dir: Option<Vec2>, buildings: &[Building]) {
         if let Some(dir) = joystick_dir {
             if dir.length_squared() > 0.0 {
-                self.move_by_direction(dir);
+                self.move_by_direction(dir, buildings);
             } else {
                 self.state = PlayerState::Idle;
             }
         } else {
-            self.update(); // fallback to keyboard controls
+            self.update(buildings); // fallback to keyboard controls
             return; // to avoid double update
         }
     
@@ -171,23 +172,41 @@ impl Player {
         draw_rectangle(bar_x, bar_y, bar_width * health_ratio, bar_height, health_color);
     }
 
-    pub fn move_by_direction(&mut self, direction: Vec2) {
+    pub fn move_by_direction(&mut self, direction: Vec2, buildings: &[Building]) {
         let mut move_dir = direction;
-    
-        if move_dir.length_squared() > 0.0 {
-            move_dir = move_dir.normalize();
-            self.last_movement = move_dir;
-            self.facing_right = move_dir.x >= 0.0;
-            self.state = PlayerState::Walking;
-    
-            self.x += move_dir.x * self.speed;
-            self.y -= move_dir.y * self.speed;
-    
-            self.x = self.x.clamp(0.0, WORLD_WIDTH - self.size);
-            self.y = self.y.clamp(0.0, WORLD_HEIGHT - self.size);
-        } else {
+
+        if move_dir.length_squared() == 0.0 {
             self.state = PlayerState::Idle;
+            return;
         }
+
+        move_dir = move_dir.normalize();
+        self.last_movement = move_dir;
+        self.facing_right = move_dir.x >= 0.0;
+        self.state = PlayerState::Walking;
+
+        // Try X movement
+        let mut moved_x = false;
+        let temp_x = self.x + move_dir.x * self.speed;
+        let mut new_rect = Rect::new(temp_x, self.y, self.size, self.size);
+        if !buildings.iter().any(|b| b.bounds().overlaps(&new_rect)) {
+            self.x = temp_x;
+            moved_x = true;
+        }
+
+        // Try Y movement
+        let temp_y = self.y - move_dir.y * self.speed;
+        new_rect = Rect::new(self.x, temp_y, self.size, self.size);
+        if !buildings.iter().any(|b| b.bounds().overlaps(&new_rect)) {
+            self.y = temp_y;
+        } else if moved_x {
+            // Try sliding on Y axis only if X movement succeeded (optional)
+            self.state = PlayerState::Walking;
+        }
+
+        // Clamp to world bounds
+        self.x = self.x.clamp(0.0, WORLD_WIDTH - self.size);
+        self.y = self.y.clamp(0.0, WORLD_HEIGHT - self.size);
     }
 
     pub fn take_damage(&mut self, amount: f32) {

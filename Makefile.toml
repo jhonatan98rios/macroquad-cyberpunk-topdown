@@ -9,8 +9,8 @@ script = "timeout /t 3 /nobreak"
 script = [
     "echo Copying WASM file...",
     "if not exist build mkdir build",
-    "echo Copying from target\\wasm32-unknown-unknown\\release\\topdown-light-fantasy.wasm",
-    "copy /Y target\\wasm32-unknown-unknown\\release\\topdown-light-fantasy.wasm build\\topdown-light-fantasy.wasm"
+    "echo Copying from target\\wasm32-unknown-unknown\\release\\topdown-cyberpunk.wasm",
+    "copy /Y target\\wasm32-unknown-unknown\\release\\topdown-cyberpunk.wasm build\\topdown-cyberpunk.wasm"
 ]
 
 [tasks.serve]

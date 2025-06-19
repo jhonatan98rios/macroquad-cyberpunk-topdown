@@ -11,6 +11,7 @@ mod game_over;
 mod level_up;
 
 mod scenario;
+mod buildings;
 
 mod skills;
 mod experience;

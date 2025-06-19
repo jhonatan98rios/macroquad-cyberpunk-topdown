@@ -9,12 +9,14 @@ use crate::strategies::{BoidsMovement, AABBCollision};
 use crate::state::GameState;
 
 use crate::skills::skills_system::SkillsSystem;
-use crate::skills::skills_factory::SkillsFactory;
+// use crate::skills::skills_factory::SkillsFactory;
 
 use crate::experience::experience_system::ExperienceSystem;
 
 use crate::scenario::floor::FloorTileSet;
 use crate::scenario::floor_map::TileMap;
+
+use crate::buildings::{BuildingsManager, BuildingsFactory};
 
 pub struct Game {
     player: Player,
@@ -26,6 +28,7 @@ pub struct Game {
     joystick_dir: Option<Vec2>,
     floor_tiles: FloorTileSet,
     map: TileMap,
+    buildings_manager: BuildingsManager,
 }
 
 impl Game {
@@ -62,20 +65,22 @@ impl Game {
             10.0,
         ).await;
 
-        let mut skills_system = SkillsSystem::new();
+        let skills_system = SkillsSystem::new();
 
-        skills_system.add_skill(
-            Box::new(SkillsFactory::create_simple_projectile_manager())
-        );
+        // skills_system.add_skill(
+        //     Box::new(SkillsFactory::create_simple_projectile_manager())
+        // );
 
-        skills_system.add_skill(
-            Box::new(SkillsFactory::create_force_field_manager())
-        );        
+        // skills_system.add_skill(
+        //     Box::new(SkillsFactory::create_force_field_manager())
+        // );        
 
         let experience_system = ExperienceSystem::new();
 
         let floor_tiles = FloorTileSet::load("images/ground.png").await;
         let map = TileMap::load_from_csv("files/ground.csv").await;
+
+        let buildings_manager: BuildingsManager = BuildingsFactory::create_default_buildings().await; 
 
         Game {
             player,
@@ -86,7 +91,8 @@ impl Game {
             joystick,
             joystick_dir: None,
             floor_tiles,
-            map
+            map,
+            buildings_manager
         }
     }
 
@@ -101,8 +107,9 @@ impl Game {
             joy.direction()
         });
 
-        self.player.update_with_direction(self.joystick_dir); //TODO: Refactore these two methods
-        self.player.update();
+        //TODO: Refactore these two methods
+        self.player.update_with_direction(self.joystick_dir, &self.buildings_manager.get_buildings());
+        self.player.update(&self.buildings_manager.get_buildings());
 
         self.enemies.update(self.player.position(), &mut self.player);
         
@@ -141,9 +148,13 @@ impl Game {
         // Draw the ground
         self.floor_tiles.draw_tilemap(&self.map);
 
+        
+        self.buildings_manager.draw_above_player(self.player.position().y);
         self.enemies.draw(self.player.position(), PositionOverlap::Behind);
         self.player.draw();
         self.enemies.draw(self.player.position(),PositionOverlap::InFront);
+        self.buildings_manager.draw_below_player(self.player.position().y);
+
         self.experience_system.draw();
         self.skills_system.draw();
     }
