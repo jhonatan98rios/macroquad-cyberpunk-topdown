@@ -2,6 +2,7 @@ mod player;
 mod enemies;
 mod strategies;
 mod constants;
+mod render;
 mod menu;
 mod pause;
 mod state;

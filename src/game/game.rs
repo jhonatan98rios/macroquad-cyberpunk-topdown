@@ -5,6 +5,7 @@ use crate::enemies::{EnemySystem, PositionOverlap};
 use crate::constants::{ENEMIES, WORLD_WIDTH, WORLD_HEIGHT, virtual_height, virtual_width};
 use crate::components::joystick::Joystick;
 use crate::components::layout::{is_mobile};
+use crate::render::Renderable;
 use crate::strategies::{BoidsMovement, AABBCollision};
 use crate::state::GameState;
 
@@ -148,12 +149,34 @@ impl Game {
         // Draw the ground
         self.floor_tiles.draw_tilemap(&self.map);
 
+        // Draw sorted renderables
+        let mut renderables: Vec<&dyn Renderable> = vec![];
+
+        renderables.push(&self.player);
         
-        self.buildings_manager.draw_above_player(self.player.position().y);
-        self.enemies.draw(self.player.position(), PositionOverlap::Behind);
-        self.player.draw();
-        self.enemies.draw(self.player.position(),PositionOverlap::InFront);
-        self.buildings_manager.draw_below_player(self.player.position().y);
+        self.buildings_manager.buildings.iter().for_each(|building| {
+            renderables.push(building);
+        });
+
+        // Sort by y position descending
+        renderables.sort_by(|a, b| {
+            let a_y = a.position().y;
+            let b_y = b.position().y;
+            b_y.partial_cmp(&a_y).unwrap_or(std::cmp::Ordering::Equal)
+        });
+
+        // Draw all renderables
+        for renderable in renderables {
+            renderable.draw();
+        }
+        
+        // self.buildings_manager.draw_above_player(self.player.position().y);
+        // self.enemies.draw(self.player.position(), PositionOverlap::Behind);
+        // self.player.draw();
+        // self.enemies.draw(self.player.position(),PositionOverlap::InFront);
+        // self.buildings_manager.draw_below_player(self.player.position().y);
+
+
 
         self.experience_system.draw();
         self.skills_system.draw();

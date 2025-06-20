@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use crate::constants::{WORLD_HEIGHT, WORLD_WIDTH};
 use crate::buildings::Building;
+use crate::render::Renderable;
 
 #[derive(PartialEq, Clone, Copy)]
 enum PlayerState {
@@ -62,10 +63,6 @@ impl Player {
         return player;
     }
 
-    pub fn position(&self) -> Vec2 {
-        Vec2::new(self.x, self.y)
-    }
-
     pub fn update(&mut self, buildings: &[Building]) {
         let mut move_dir = Vec2::ZERO;
 
@@ -109,42 +106,7 @@ impl Player {
         }
     }
 
-    pub fn draw(&self) {
-        match &self.texture {
-            Some(texture) => {
-                let frame_width = self.size;
-                let frame_height = self.size;
-
-                let row = match (self.state, self.facing_right) {
-                    (PlayerState::Idle, false) => 0,
-                    (PlayerState::Walking, false) => 1,
-                    (PlayerState::Idle, true) => 2,
-                    (PlayerState::Walking, true) => 3,
-                };
-
-                let params = DrawTextureParams {
-                    dest_size: Some(Vec2::new(self.size, self.size)),
-                    flip_x: false,
-                    flip_y: true,
-                    source: Some(Rect {
-                        x: self.current_frame as f32 * frame_width,
-                        y: row as f32 * frame_height,
-                        w: frame_width,
-                        h: frame_height,
-                    }),
-                    ..Default::default()
-                };
-                draw_texture_ex(texture, self.x, self.y, WHITE, params);
-            }
-            None => {
-                draw_rectangle(self.x, self.y, self.size, self.size, BLUE);
-            }
-        }
-
-        self.draw_health_bar();
-    }
-
-    pub fn draw_health_bar(&self) {
+    fn draw_health_bar(&self) {
 
         if self.health == self.max_health {
             return;
@@ -232,5 +194,46 @@ impl Player {
         self.experience_to_next_level = (self.experience_to_next_level * 1.5).round(); // Example of increasing experience needed for next level
         self.max_health += 10.0; // Example of increasing max health on level up
         self.health = self.max_health; // Restore health on level up
+    }
+}
+
+impl Renderable for Player {
+    fn position(&self) -> Vec2 {
+        Vec2::new(self.x, self.y)
+    }
+
+    fn draw(&self) {
+        match &self.texture {
+            Some(texture) => {
+                let frame_width = self.size;
+                let frame_height = self.size;
+
+                let row = match (self.state, self.facing_right) {
+                    (PlayerState::Idle, false) => 0,
+                    (PlayerState::Walking, false) => 1,
+                    (PlayerState::Idle, true) => 2,
+                    (PlayerState::Walking, true) => 3,
+                };
+
+                let params = DrawTextureParams {
+                    dest_size: Some(Vec2::new(self.size, self.size)),
+                    flip_x: false,
+                    flip_y: true,
+                    source: Some(Rect {
+                        x: self.current_frame as f32 * frame_width,
+                        y: row as f32 * frame_height,
+                        w: frame_width,
+                        h: frame_height,
+                    }),
+                    ..Default::default()
+                };
+                draw_texture_ex(texture, self.x, self.y, WHITE, params);
+            }
+            None => {
+                draw_rectangle(self.x, self.y, self.size, self.size, BLUE);
+            }
+        }
+
+        self.draw_health_bar();
     }
 }

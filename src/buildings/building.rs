@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use crate::render::Renderable;
 
 pub struct Building {
     pub texture: Texture2D,
@@ -20,7 +21,17 @@ impl Building {
         }
     }
 
-    pub fn draw(&self) {
+    pub fn bounds(&self) -> Rect {
+        self.collision_rect
+    }
+}
+
+impl Renderable for Building {
+    fn position(&self) -> Vec2 {
+        return self.position;
+    }
+
+    fn draw(&self) {
         draw_texture_ex(
             &self.texture,
             self.position.x,
@@ -32,9 +43,5 @@ impl Building {
                 ..Default::default()
             },
         );
-    }
-
-    pub fn bounds(&self) -> Rect {
-        self.collision_rect
     }
 }

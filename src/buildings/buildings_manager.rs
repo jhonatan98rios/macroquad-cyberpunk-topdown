@@ -1,8 +1,10 @@
 use macroquad::prelude::*;
+use crate::render::Renderable;
+
 use super::building::Building;
 
 pub struct BuildingsManager {
-    buildings: Vec<Building>,
+    pub buildings: Vec<Building>,
 }
 
 impl BuildingsManager {

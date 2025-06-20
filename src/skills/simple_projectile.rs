@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::player::Player;
+use crate::render::Renderable;
 use super::traits::{SkillManager};
 use std::collections::HashMap;
 use crate::skills::skill_id::SkillId;

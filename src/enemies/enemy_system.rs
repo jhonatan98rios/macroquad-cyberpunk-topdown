@@ -227,7 +227,7 @@ impl EnemySystem {
         self.draw_health_bars();
     }
 
-    pub fn draw_health_bars(&self) {
+    fn draw_health_bars(&self) {
         for i in 0..self.positions.len() {
             if self.data[i].status == EnemyStatus::Live {
                 

@@ -1,3 +1,5 @@
+# Shared tasks for building and serving a WASM project
+
 [tasks.build-wasm]
 command = "cargo"
 args = ["build", "--release", "--target", "wasm32-unknown-unknown"]
@@ -5,7 +7,16 @@ args = ["build", "--release", "--target", "wasm32-unknown-unknown"]
 [tasks.wait]
 script = "timeout /t 3 /nobreak"
 
-[tasks.copy-wasm]
+[tasks.serve]
+script = [
+    "cd build",
+    "live-server --port=8000"
+]
+
+
+# Windows-specific tasks
+
+[tasks.copy-wasm-windows]
 script = [
     "echo Copying WASM file...",
     "if not exist build mkdir build",
@@ -13,18 +24,36 @@ script = [
     "copy /Y target\\wasm32-unknown-unknown\\release\\topdown-cyberpunk.wasm build\\topdown-cyberpunk.wasm"
 ]
 
-[tasks.serve]
-script = [
-    "cd build",
-    "live-server --port=8000"
-]
+[tasks.web-windows]
+dependencies = ["build-wasm", "wait", "copy-wasm-windows", "wait", "serve"]
+
+[tasks.wasm-windows]
+dependencies = ["build-wasm", "wait", "copy-wasm-windows", "wait"]
 
 [tasks.build-windows]
 command = "cargo"
 args = ["build", "--release", "--target", "x86_64-pc-windows-msvc"]
 
-[tasks.start]
-dependencies = ["build-wasm", "wait", "copy-wasm", "wait", "serve"]
 
-[tasks.wasm]
-dependencies = ["build-wasm", "wait", "copy-wasm", "wait"]
+
+# Linux-specific tasks
+
+[tasks.copy-wasm-linux]
+script = [
+    "echo 'Copying WASM file...'",
+    "mkdir -p build",
+    "echo 'Copying from target/wasm32-unknown-unknown/release/topdown-cyberpunk.wasm'",
+    "cp -f target/wasm32-unknown-unknown/release/topdown-cyberpunk.wasm build/topdown-cyberpunk.wasm"
+]
+
+[tasks.web-linux]
+dependencies = ["build-wasm", "wait", "copy-wasm-linux", "wait", "serve"]
+
+[tasks.wasm-linux]
+dependencies = ["build-wasm", "wait", "copy-wasm-linux", "wait"]
+
+[tasks.run-linux]
+script = [
+    "cd assets",
+    "cargo run --manifest-path ../Cargo.toml"
+]

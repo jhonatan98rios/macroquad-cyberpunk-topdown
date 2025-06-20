@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 use crate::player::Player;
+use crate::render::Renderable;
 use crate::state::GameState;
 
 
