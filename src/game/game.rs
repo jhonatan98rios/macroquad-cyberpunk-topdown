@@ -1,7 +1,8 @@
 use macroquad::prelude::*;
 
 use crate::player::Player;
-use crate::enemies::{EnemySystem, PositionOverlap};
+use crate::enemies::{EnemyRenderable, EnemyStatus, EnemySystem};
+
 use crate::constants::{ENEMIES, WORLD_WIDTH, WORLD_HEIGHT, virtual_height, virtual_width};
 use crate::components::joystick::Joystick;
 use crate::components::layout::{is_mobile};
@@ -152,11 +153,19 @@ impl Game {
         // Draw sorted renderables
         let mut renderables: Vec<&dyn Renderable> = vec![];
 
+        // Draw the player
         renderables.push(&self.player);
         
+        // Draw the buildings
         self.buildings_manager.buildings.iter().for_each(|building| {
             renderables.push(building);
         });
+
+        // Draw the enemies
+        let enemy_renderables = self.enemies.to_renderables(self.player.position());
+        for r in &enemy_renderables {
+            renderables.push(r);
+        }
 
         // Sort by y position descending
         renderables.sort_by(|a, b| {
@@ -169,15 +178,7 @@ impl Game {
         for renderable in renderables {
             renderable.draw();
         }
-        
-        // self.buildings_manager.draw_above_player(self.player.position().y);
-        // self.enemies.draw(self.player.position(), PositionOverlap::Behind);
-        // self.player.draw();
-        // self.enemies.draw(self.player.position(),PositionOverlap::InFront);
-        // self.buildings_manager.draw_below_player(self.player.position().y);
-
-
-
+     
         self.experience_system.draw();
         self.skills_system.draw();
     }
@@ -190,7 +191,7 @@ impl Game {
         }
 
         draw_text(
-            &format!("WASD or Arrows to move | FPS: {} | enemies {}", get_fps(), self.enemies.positions.len()),
+            &format!("WASD or Arrows to move | FPS: {} | enemies {}", get_fps(), self.enemies.enemies.len()),
             if is_mobile() { 40.0 } else { 20.0 },
             30.0,
             30.0, 

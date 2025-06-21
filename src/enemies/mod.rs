@@ -1,8 +1,9 @@
 mod enemy_system;
-mod enemy_view;
+mod enemy;
 
 pub use enemy_system::EnemySystem;
-pub use enemy_system::PositionOverlap;
-pub use enemy_system::EnemyStatus;
-pub use enemy_system::EnemyData;
-pub use enemy_view::EnemyView;
+pub use enemy::EnemyStatus;
+pub use enemy::Enemy;
+pub use enemy::EnemyInfo;
+pub use enemy::EnemyView;
+pub use enemy::EnemyRenderable;

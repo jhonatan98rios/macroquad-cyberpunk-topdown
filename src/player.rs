@@ -201,9 +201,12 @@ impl Renderable for Player {
     fn position(&self) -> Vec2 {
         Vec2::new(self.x, self.y)
     }
-
+    
     fn draw(&self) {
-        match &self.texture {
+
+        let texture = self.texture.as_ref();
+
+        match texture {
             Some(texture) => {
                 let frame_width = self.size;
                 let frame_height = self.size;

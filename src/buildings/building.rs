@@ -1,5 +1,5 @@
 use macroquad::prelude::*;
-use crate::render::Renderable;
+use crate::{render::Renderable};
 
 pub struct Building {
     pub texture: Texture2D,

@@ -5,28 +5,22 @@ pub use boids::BoidsMovement;
 pub use collisions::AABBCollision;
 
 use macroquad::prelude::*;
-use crate::enemies::{EnemyData};
+use crate::enemies::{Enemy, EnemyInfo};
 use crate::player::Player;
 
 #[allow(dead_code)]
 pub trait MovementStrategy: Send + Sync {
     fn move_enemy(
-        &self, 
-        position: &mut Vec2,
+        &self,
+        enemy: &mut Enemy,
         target: Vec2,
         time: f32,
         index: usize,
-        all_positions: &[Vec2]
+        all_enemies: &[EnemyInfo],
     );
 }
 
 #[allow(dead_code)]
 pub trait CollisionStrategy {
-    fn check_collisions(
-        &mut self,
-        positions: &mut Vec<Vec2>,
-        sizes: &Vec<Vec2>,
-        data: &mut Vec<EnemyData>,
-        player: &mut Player
-    );
+    fn check_collisions(&self, enemies: &mut [Enemy], player: &mut Player);
 }
