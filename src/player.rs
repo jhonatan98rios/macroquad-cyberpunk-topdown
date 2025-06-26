@@ -44,8 +44,8 @@ impl Player {
         let player = Player {
             x,
             y,
-            max_health: 200.0,
-            health: 200.0,
+            max_health: 20000.0,
+            health: 20000.0,
             speed: 1.5,
             size: 64.0,
             texture,

@@ -17,6 +17,7 @@ pub trait MovementStrategy: Send + Sync {
         time: f32,
         index: usize,
         all_enemies: &[EnemyInfo],
+        obstacles: &[Rect],
     );
 }
 

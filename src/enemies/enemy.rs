@@ -52,7 +52,7 @@ impl<'a> Renderable for EnemyRenderable<'a> {
 
         match texture {
             Some(texture) => {
-                let frame_width = self.enemy.size.x;
+                /* let frame_width = self.enemy.size.x;
                 let frame_height = self.enemy.size.y;
 
                 let params = DrawTextureParams {
@@ -73,6 +73,14 @@ impl<'a> Renderable for EnemyRenderable<'a> {
                     self.enemy.position.y,
                     WHITE,
                     params
+                ); */
+
+                draw_rectangle(
+                    self.enemy.position.x,
+                    self.enemy.position.y,
+                    self.enemy.size.x,
+                    self.enemy.size.y,
+                    RED,
                 );
             }
 
@@ -86,7 +94,5 @@ impl<'a> Renderable for EnemyRenderable<'a> {
                 );
             }
         }
-
-
     }
 }

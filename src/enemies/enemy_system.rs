@@ -67,16 +67,16 @@ impl EnemySystem {
         }
     }
 
-    pub fn update(&mut self, target_pos: Vec2, player: &mut Player) {
+    pub fn update(&mut self, target_pos: Vec2, player: &mut Player, obstacles: &[Rect]) {
 
-        self.update_movement(target_pos);
+        self.update_movement(target_pos, obstacles);
         self.update_animation_frame();
 
         // Here the compiler allow us to use the mutable reference to self.data
         self.collision_strategy.check_collisions(&mut self.enemies, player);
     }
 
-    fn update_movement(&mut self, target_pos: Vec2) {
+    fn update_movement(&mut self, target_pos: Vec2, obstacles: &[Rect]) {
         self.time += get_frame_time();
         self.chunk_index = (self.chunk_index + 1) % self.max_number_of_chunks;
 
@@ -105,6 +105,7 @@ impl EnemySystem {
                     current_time,
                     index,
                     &all_enemies,
+                    obstacles,
                 );
 
                 let movement = enemy.position - prev_pos;

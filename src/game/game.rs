@@ -1,7 +1,7 @@
 use macroquad::prelude::*;
 
 use crate::player::Player;
-use crate::enemies::{EnemyRenderable, EnemyStatus, EnemySystem};
+use crate::enemies::{EnemySystem};
 
 use crate::constants::{ENEMIES, WORLD_WIDTH, WORLD_HEIGHT, virtual_height, virtual_width};
 use crate::components::joystick::Joystick;
@@ -113,7 +113,16 @@ impl Game {
         self.player.update_with_direction(self.joystick_dir, &self.buildings_manager.get_buildings());
         self.player.update(&self.buildings_manager.get_buildings());
 
-        self.enemies.update(self.player.position(), &mut self.player);
+        let obstacles: Vec<Rect> = self.buildings_manager.get_buildings()
+            .iter()
+            .map(|b| b.bounds())
+            .collect();
+
+        self.enemies.update(
+            self.player.position(), 
+            &mut self.player,
+            &obstacles,
+        );
         
 
         let enemy_views = self.enemies.to_views();

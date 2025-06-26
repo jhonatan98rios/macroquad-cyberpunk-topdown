@@ -50,7 +50,7 @@ impl BuildingsFactory {
             vec2(1160.0, 270.0), // Posição do prédio
             vec2(254.0, 550.0), // Tamanho do prédio
             vec2(1180.0, 320.0), // Posição da area de colisão (pos.x + 20, pos.y + 60)
-            vec2(214.0, 100.0), // Tamanho da area de colisão (size.x - 40, Y size depends on the building size)
+            vec2(214.0, 200.0), // Tamanho da area de colisão (size.x - 40, Y size depends on the building size)
         ).await;
         manager.add(japan_store_1);
 
@@ -59,7 +59,7 @@ impl BuildingsFactory {
             vec2(1410.0, 260.0), // Posição do prédio
             vec2(250.0, 450.0), // Tamanho do prédio
             vec2(1430.0, 320.0), // Posição da area de colisão (pos.x + 20, pos.y + 60)
-            vec2(210.0, 100.0), // Tamanho da area de colisão (size.x - 40, Y size depends on the building size)
+            vec2(210.0, 200.0), // Tamanho da area de colisão (size.x - 40, Y size depends on the building size)
         ).await;
         manager.add(cafe_1);
 
