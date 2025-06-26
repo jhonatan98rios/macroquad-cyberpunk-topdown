@@ -7,6 +7,7 @@ use crate::constants::{ENEMIES, WORLD_WIDTH, WORLD_HEIGHT, virtual_height, virtu
 use crate::components::joystick::Joystick;
 use crate::components::layout::{is_mobile};
 use crate::render::Renderable;
+use crate::scenario::collision_map::{CollisionMap};
 use crate::strategies::{BoidsMovement, AABBCollision};
 use crate::state::GameState;
 
@@ -42,6 +43,10 @@ impl Game {
             ..Default::default()
         };
 
+        let collision_map = CollisionMap::load_from_csv(
+            "files/collisions.csv"
+        ).await;
+
         let movement_strategy = Box::new(BoidsMovement {
             visual_range: 32.0,
             separation_dist: 40.0,
@@ -52,6 +57,7 @@ impl Game {
             separation_weight: 3.2,
             alignment_weight: 1.5,
             cohesion_weight: 0.3,
+            collision_map: collision_map,
         });
 
         let collision_strategy = Box::new(AABBCollision {});
@@ -81,6 +87,7 @@ impl Game {
 
         let floor_tiles = FloorTileSet::load("images/ground.png").await;
         let map = TileMap::load_from_csv("files/ground.csv").await;
+
 
         let buildings_manager: BuildingsManager = BuildingsFactory::create_default_buildings().await; 
 
@@ -169,6 +176,8 @@ impl Game {
         self.buildings_manager.buildings.iter().for_each(|building| {
             renderables.push(building);
         });
+
+        // self.enemies.movement_strategy.draw();
 
         // Draw the enemies
         let enemy_renderables = self.enemies.to_renderables(self.player.position());

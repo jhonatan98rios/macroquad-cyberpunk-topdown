@@ -7,6 +7,7 @@ pub use collisions::AABBCollision;
 use macroquad::prelude::*;
 use crate::enemies::{Enemy, EnemyInfo};
 use crate::player::Player;
+use crate::scenario::collision_map::CollisionMap;
 
 #[allow(dead_code)]
 pub trait MovementStrategy: Send + Sync {
@@ -19,6 +20,9 @@ pub trait MovementStrategy: Send + Sync {
         all_enemies: &[EnemyInfo],
         obstacles: &[Rect],
     );
+
+    fn draw(&self);
+    fn get_collision_map(&self) -> CollisionMap;
 }
 
 #[allow(dead_code)]

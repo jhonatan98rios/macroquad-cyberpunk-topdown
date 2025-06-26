@@ -32,7 +32,7 @@ impl Renderable for Building {
     }
 
     fn draw(&self) {
-        /* draw_texture_ex(
+        draw_texture_ex(
             &self.texture,
             self.position.x,
             self.position.y,
@@ -42,14 +42,14 @@ impl Renderable for Building {
                 flip_y: true,
                 ..Default::default()
             },
-        ); */
-
-        draw_rectangle(
-            self.collision_rect.x, 
-            self.collision_rect.y, 
-            self.collision_rect.w, 
-            self.collision_rect.h, 
-            BLUE
         );
+
+        // draw_rectangle(
+        //     self.collision_rect.x, 
+        //     self.collision_rect.y, 
+        //     self.collision_rect.w, 
+        //     self.collision_rect.h, 
+        //     BLUE
+        // );
     }
 }

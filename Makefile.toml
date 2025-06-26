@@ -57,3 +57,7 @@ script = [
     "cd assets",
     "cargo run --manifest-path ../Cargo.toml"
 ]
+
+[tasks.build-linux]
+command = "cargo"
+args = ["build", "--release"]

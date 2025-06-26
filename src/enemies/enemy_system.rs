@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use std::cmp;
 
+use crate::scenario::collision_map::CollisionMap;
 use crate::strategies::{MovementStrategy, CollisionStrategy};
 use crate::constants::{WORLD_WIDTH, WORLD_HEIGHT};
 use crate::player::Player;
@@ -10,7 +11,7 @@ use crate::enemies::{
 
 pub struct EnemySystem {
     pub enemies: Vec<Enemy>,
-    movement_strategy: Box<dyn MovementStrategy>,
+    pub movement_strategy: Box<dyn MovementStrategy>,
     collision_strategy: Box<dyn CollisionStrategy>,
     time: f32,
     chunk_index: usize,
@@ -38,12 +39,15 @@ impl EnemySystem {
 
         let enemies = (0..count)
             .map(|_| Enemy {
-                position: vec2(rand::gen_range(0.0, WORLD_WIDTH), rand::gen_range(0.0, WORLD_HEIGHT)),
+                position: EnemySystem::get_random_position(movement_strategy.get_collision_map()),
                 size: vec2(64.0, 64.0),
                 status: EnemyStatus::Pending,
                 last_movement: Vec2::new(1.0, 0.0),
                 max_health: 5.0,
                 health: 5.0,
+                path: vec![],
+                path_index: 0,
+                last_tile: (0, 0),
             })
             .collect();
 
@@ -59,6 +63,18 @@ impl EnemySystem {
             frame_timer: 0.0,
             frame_duration: 0.15,
         }
+    }
+
+    pub fn get_random_position(collision_map: CollisionMap) -> Vec2 {
+        let x = rand::gen_range(0.0, WORLD_WIDTH);
+        let y = rand::gen_range(0.0, WORLD_HEIGHT);
+        let pos = vec2(x, y);
+
+        if collision_map.is_colliding(pos) {
+            return EnemySystem::get_random_position(collision_map);
+        }
+        
+        return pos;
     }
 
     pub fn spawn_all(&mut self) {

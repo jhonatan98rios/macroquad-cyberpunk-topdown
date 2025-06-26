@@ -17,6 +17,9 @@ pub struct Enemy {
     pub last_movement: Vec2,
     pub max_health: f32,
     pub health: f32,
+    pub path: Vec<Vec2>,
+    pub path_index: usize,
+    pub last_tile: (usize, usize),
 }
 
 
@@ -52,7 +55,7 @@ impl<'a> Renderable for EnemyRenderable<'a> {
 
         match texture {
             Some(texture) => {
-                /* let frame_width = self.enemy.size.x;
+                let frame_width = self.enemy.size.x;
                 let frame_height = self.enemy.size.y;
 
                 let params = DrawTextureParams {
@@ -73,15 +76,15 @@ impl<'a> Renderable for EnemyRenderable<'a> {
                     self.enemy.position.y,
                     WHITE,
                     params
-                ); */
-
-                draw_rectangle(
-                    self.enemy.position.x,
-                    self.enemy.position.y,
-                    self.enemy.size.x,
-                    self.enemy.size.y,
-                    RED,
                 );
+
+                // draw_rectangle(
+                //     self.enemy.position.x,
+                //     self.enemy.position.y,
+                //     self.enemy.size.x,
+                //     self.enemy.size.y,
+                //     RED,
+                // );
             }
 
             None => {
